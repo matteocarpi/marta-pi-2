@@ -10,6 +10,7 @@ ExecStart=/usr/bin/python3 /home/admin/marta-pi-2/main.py
 Environment=SLIDESHOW_DIR=/home/admin/marta-pi-2/images
 Environment=FB_DEVICE=/dev/fb1
 Environment=SLIDE_SECONDS=10
+Environment=AUDIO_DEVICE=plughw:Headphones
 Restart=always
 RestartSec=5
 
