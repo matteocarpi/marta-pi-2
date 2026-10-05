@@ -6,11 +6,11 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageOps
 
-IMAGES_DIR = Path(os.environ.get("SLIDESHOW_DIR", "/home/admin/images"))
-FB_DEVICE = os.environ.get("FB_DEVICE", "/dev/fb0")
+import media
+
+FB_DEVICE = os.environ.get("FB_DEVICE", "/dev/fb1")
 SLIDE_SECONDS = float(os.environ.get("SLIDE_SECONDS", "10"))
 TTY = os.environ.get("SLIDESHOW_TTY", "/dev/tty1")
-EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".gif", ".webp"}
 
 
 def read_sysfs(name):
@@ -72,28 +72,23 @@ def fit_to_screen(path, width, height):
     return canvas
 
 
-def list_images():
-    if not IMAGES_DIR.is_dir():
-        return []
-    return sorted(
-        p for p in IMAGES_DIR.iterdir() if p.is_file() and p.suffix.lower() in EXTENSIONS
-    )
-
-
 def main():
     width, height, bpp, stride = framebuffer_info()
     print(f"Framebuffer {FB_DEVICE}: {width}x{height} {bpp}bpp, stride {stride}", flush=True)
     prepare_console()
 
+    shown = None
     with open(FB_DEVICE, "r+b", buffering=0) as fb:
         while True:
-            images = list_images()
-            if not images:
-                print(f"No images in {IMAGES_DIR}, waiting...", flush=True)
+            path = media.image()
+            if path is None:
+                print("No image found, waiting...", flush=True)
                 time.sleep(SLIDE_SECONDS)
                 continue
+            if path != shown:
+                print(f"Showing {path}", flush=True)
+                shown = path
 
-            path = images[0]
             try:
                 frame = fit_to_screen(path, width, height)
             except Exception as exc:

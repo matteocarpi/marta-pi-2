@@ -2,11 +2,9 @@
 import os
 import subprocess
 import time
-from pathlib import Path
 
-AUDIO_FILE = Path(
-    os.environ.get("AUDIO_FILE", Path(__file__).resolve().parent / "audio" / "audio.mp3")
-)
+import media
+
 AUDIO_DEVICE = os.environ.get("AUDIO_DEVICE", "plughw:Headphones")
 AUDIO_VOLUME = os.environ.get("AUDIO_VOLUME", "100%")
 RETRY_SECONDS = 5
@@ -25,12 +23,17 @@ def set_volume():
 
 def main():
     set_volume()
+    playing = None
     while True:
-        if not AUDIO_FILE.is_file():
-            print(f"Audio file not found: {AUDIO_FILE}, waiting...", flush=True)
+        path = media.audio()
+        if path is None:
+            print("No audio found, waiting...", flush=True)
             time.sleep(RETRY_SECONDS)
             continue
-        result = subprocess.run(["mpg123", "-q", "-o", "alsa", "-a", AUDIO_DEVICE, str(AUDIO_FILE)])
+        if path != playing:
+            print(f"Playing {path}", flush=True)
+            playing = path
+        result = subprocess.run(["mpg123", "-q", "-o", "alsa", "-a", AUDIO_DEVICE, str(path)])
         if result.returncode != 0:
             print(f"mpg123 exited with code {result.returncode}", flush=True)
             time.sleep(RETRY_SECONDS)

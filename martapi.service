@@ -1,16 +1,17 @@
 [Unit]
 Description=Martapi
-After=local-fs.target systemd-user-sessions.service
+After=local-fs.target systemd-user-sessions.service sound.target
 Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-WorkingDirectory=/home/admin/marta-pi-2
-ExecStart=/usr/bin/python3 /home/admin/marta-pi-2/main.py
-Environment=SLIDESHOW_DIR=/home/admin/marta-pi-2/images
+WorkingDirectory=@REPO_DIR@
+ExecStart=/usr/bin/python3 @REPO_DIR@/main.py
 Environment=FB_DEVICE=/dev/fb1
 Environment=SLIDE_SECONDS=10
 Environment=AUDIO_DEVICE=plughw:Headphones
+Environment=AUDIO_VOLUME=100%
+EnvironmentFile=-/etc/martapi.env
 Restart=always
 RestartSec=5
 
