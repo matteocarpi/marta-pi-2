@@ -5,9 +5,9 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-WorkingDirectory=/home/admin
-ExecStart=/usr/bin/python3 /home/admin/main.py
-Environment=SLIDESHOW_DIR=/home/admin/images
+WorkingDirectory=/home/admin/marta-pi-2
+ExecStart=/usr/bin/python3 /home/admin/marta-pi-2/main.py
+Environment=SLIDESHOW_DIR=/home/admin/marta-pi-2/images
 Environment=FB_DEVICE=/dev/fb0
 Environment=SLIDE_SECONDS=10
 Restart=always
