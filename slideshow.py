@@ -93,15 +93,16 @@ def main():
                 time.sleep(SLIDE_SECONDS)
                 continue
 
-            for path in images:
-                try:
-                    frame = fit_to_screen(path, width, height)
-                except Exception as exc:
-                    print(f"Skipping {path.name}: {exc}", flush=True)
-                    continue
-                fb.seek(0)
-                fb.write(to_framebuffer_bytes(frame, width, height, bpp, stride))
+            path = images[0]
+            try:
+                frame = fit_to_screen(path, width, height)
+            except Exception as exc:
+                print(f"Cannot show {path.name}: {exc}", flush=True)
                 time.sleep(SLIDE_SECONDS)
+                continue
+            fb.seek(0)
+            fb.write(to_framebuffer_bytes(frame, width, height, bpp, stride))
+            time.sleep(SLIDE_SECONDS)
 
 
 if __name__ == "__main__":
